@@ -4,7 +4,6 @@ class Contenedor {
   constructor(nombreArchivo) {
     this.nombreArchivo = nombreArchivo;
   }
-
   save = async (object) => {
     try {
       let arrayObject = [];
@@ -39,7 +38,6 @@ class Contenedor {
       return JSON.parse(data);
     } catch (error) {
       console.log(`Error al leer todos los objetos`);
-      return [];
     }
   };
 
@@ -50,19 +48,24 @@ class Contenedor {
       if (objectById) return objectById;
       else throw new Error("No encontrado");
     } catch (error) {
-      console.error(error);
-      return [];
+      console.log(`Error al leer el objeto: ${error.message}`);
     }
   };
 
   deleteById = async (id) => {
     try {
-      const allData = await this.getAll();
-      let newArrayObject = allData.filter((object) => object.id != id);
-      await fs.promises.writeFile(
-        this.nombreArchivo,
-        JSON.stringify(newArrayObject)
-      );
+      const productToDelete = await this.getById(id);
+      console.log(productToDelete);
+      if (productToDelete) {
+        const allData = await this.getAll();
+        let newArrayObject = allData.filter((object) => object.id != id);
+        if (allData)
+          await fs.promises.writeFile(
+            this.nombreArchivo,
+            JSON.stringify(newArrayObject)
+          );
+        return productToDelete;
+      } else throw new Error("No encontrado");
     } catch (error) {
       console.log(`Error al eliminar un objeto`);
     }
@@ -73,6 +76,25 @@ class Contenedor {
       await fs.promises.writeFile(this.nombreArchivo, JSON.stringify([]));
     } catch (error) {
       console.log(`Error al eliminar todos los objetos`);
+    }
+  };
+
+  updateById = async (id, newObject) => {
+    try {
+      const allData = await this.getAll();
+      //Devuelve -1 si no lo no existe ese id
+      let index = allData.findIndex((object) => object.id == id);
+      if (index != -1) {
+        newObject.id = parseInt(id);
+        allData[index] = newObject;
+        await fs.promises.writeFile(
+          this.nombreArchivo,
+          JSON.stringify(allData)
+        );
+      }
+      return newObject.id;
+    } catch (error) {
+      console.log(`Error al actualizar un objeto`);
     }
   };
 }
