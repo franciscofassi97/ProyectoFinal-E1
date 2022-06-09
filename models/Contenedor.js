@@ -7,7 +7,6 @@ class Contenedor {
   save = async (object) => {
     try {
       let arrayObject = [];
-      //Si no existe el archivo lo creo --> else
       if (fs.existsSync(this.nombreArchivo)) {
         const allData = await this.getAll();
         const id = allData[allData.length - 1].id + 1;
@@ -55,7 +54,6 @@ class Contenedor {
   deleteById = async (id) => {
     try {
       const objectToDelete = await this.getById(id);
-      console.log(objectToDelete);
       if (objectToDelete) {
         const allData = await this.getAll();
         let newArrayObject = allData.filter((object) => object.id != id);
@@ -91,8 +89,8 @@ class Contenedor {
           this.nombreArchivo,
           JSON.stringify(allData)
         );
-      }
-      return newObject.id;
+        return newObject;
+      } else throw new Error("No se encotro el objeto");
     } catch (error) {
       console.log(`Error al actualizar un objeto`);
     }

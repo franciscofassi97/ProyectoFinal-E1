@@ -15,6 +15,12 @@ const routerCarrito = require("./routers/cartRouters");
 app.use("/api/productos", routerProductos);
 app.use("/api/carrito", routerCarrito);
 
+app.use((req, res) => {
+  res.status(404).json({
+    error: "Ruta no encontrada",
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

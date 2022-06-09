@@ -1,15 +1,19 @@
 const Contenedor = require("../models/Contenedor");
 const contenedorCarrito = new Contenedor("carrito.json");
 const contenedorProductos = new Contenedor("productos.json");
-const fs = require("fs");
+
 const saveCart = async (req, res) => {
+
   try {
     const cart = {
       timestamp: new Date(),
       products: [],
     };
     const id = await contenedorCarrito.save(cart);
-    return res.status(200).json({ id });
+
+    if (id) return res.status(200).json({ id });
+    else throw new Error("No fue posible crear el carrito");
+
   } catch (error) {
     return res.status(400).json({
       error: error.message,
@@ -18,10 +22,13 @@ const saveCart = async (req, res) => {
 };
 
 const getCartById = async (req, res) => {
+  const id = req.params.id;
   try {
-    const id = req.params.id;
     const carritoById = await contenedorCarrito.getById(id);
-    return res.status(200).json({ carritoById });
+      
+    if (carritoById) return res.status(200).json(carritoById);
+    else throw new Error(`No fue posible encontrar el carrito con id ${id}`);
+    
   } catch (error) {
     return res.status(400).json({
       error: error.message,
@@ -29,24 +36,30 @@ const getCartById = async (req, res) => {
   }
 };
 
-const addProduct = async (req, res) => {
+const addProductToCart = async (req, res) => {
   const idCart = req.params.id;
   const { idProducto } = req.body;
 
   try {
-    const cart = await contenedorCarrito.getById(idCart);
-    const product = await contenedorProductos.getById(idProducto);
-    if (cart) {
-      cart.products.push(product);
-      await contenedorCarrito.updateById(idCart, cart);
-      return res.status(200).json({ cart });
-    } else throw new Error("No se ha encontrado el carrito");
+    if (idProducto) {
+      const cart = await contenedorCarrito.getById(idCart);
+      const product = await contenedorProductos.getById(idProducto);
+      if (cart && product) {
+        cart.products.push(product);
+        await contenedorCarrito.updateById(idCart, cart);
+        return res.status(200).json(cart);
+      } else throw new Error("Carrito o producto no encontrado");
+    } else
+      throw new Error("Es necesario el id del producto");
+
   } catch (error) {
-    console.log("error", error);
+    return res.status(400).json({
+      error: error.message,
+    });
   }
 };
 
-const deleteProduct = async (req, res) => {
+const removeProductFromCart = async (req, res) => {
   const idCart = req.params.id;
   const idProducto = req.params.id_prod;
 
@@ -58,8 +71,10 @@ const deleteProduct = async (req, res) => {
       );
       cart.products.splice(index, 1);
       cart = await contenedorCarrito.updateById(idCart, cart);
-      return res.status(200).json({ cart });
+      return res.status(200).json(cart);
     }
+    else throw new Error("No se encontro el carrito");
+
   } catch (error) {
     return res.status(400).json({
       error: error.message,
@@ -67,20 +82,25 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-const deleteCart = async (req, res) => {
+const removeCart = async (req, res) => {
   const id = req.params.id;
   try {
+    
     const cartDeleted = await contenedorCarrito.deleteById(id);
-    return res.status(200).json({ cartDeleted });
+    if (cartDeleted) return res.status(200).json(cartDeleted);
+    else throw new Error(`No fue posible eliminar el carrito con id ${id}`);
+   
   } catch (error) {
-    console.log("error", error);
+    return res.status(400).json({
+      error: error.message,
+    });
   }
 };
 
 module.exports = {
   saveCart,
   getCartById,
-  addProduct,
-  deleteProduct,
-  deleteCart,
+  addProductToCart,
+  removeProductFromCart,
+  removeCart,
 };

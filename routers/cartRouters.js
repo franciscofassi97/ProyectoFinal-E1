@@ -3,18 +3,18 @@ const router = require("express").Router();
 const {
   saveCart,
   getCartById,
-  addProduct,
-  deleteProduct,
-  deleteCart,
+  addProductToCart,
+  removeProductFromCart,
+  removeCart,
 } = require("../controllers/cartController");
 
 //POST
 router.post("/", saveCart);
-router.post("/:id/productos", addProduct);
+router.post("/:id/productos", addProductToCart);
 //Get
 router.get("/:id/productos", getCartById);
 
 //DELETE
-router.delete("/:id/productos/:id_prod", deleteProduct);
-router.delete("/:id", deleteCart);
+router.delete("/:id/productos/:id_prod", removeProductFromCart);
+router.delete("/:id", removeCart);
 module.exports = router;
