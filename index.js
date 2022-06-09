@@ -10,8 +10,10 @@ app.use(express.json());
 
 //Router
 const routerProductos = require("./routers/productsRouters");
+const routerCarrito = require("./routers/cartRouters");
 
 app.use("/api/productos", routerProductos);
+app.use("/api/carrito", routerCarrito);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

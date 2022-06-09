@@ -5,7 +5,15 @@ const contenedorProductos = new Contenedor("productos.json");
 const saveProduct = async (req, res) => {
   try {
     const { nombre, descripcion, codigo, fotoUrl, precio, stock } = req.body;
-    const newProduct = { nombre, descripcion, codigo, fotoUrl, precio, stock };
+    const newProduct = {
+      nombre,
+      descripcion,
+      codigo,
+      fotoUrl,
+      precio,
+      stock,
+      timestamp: new Date(),
+    };
 
     const id = await contenedorProductos.save(newProduct);
 

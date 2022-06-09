@@ -54,9 +54,9 @@ class Contenedor {
 
   deleteById = async (id) => {
     try {
-      const productToDelete = await this.getById(id);
-      console.log(productToDelete);
-      if (productToDelete) {
+      const objectToDelete = await this.getById(id);
+      console.log(objectToDelete);
+      if (objectToDelete) {
         const allData = await this.getAll();
         let newArrayObject = allData.filter((object) => object.id != id);
         if (allData)
@@ -64,7 +64,7 @@ class Contenedor {
             this.nombreArchivo,
             JSON.stringify(newArrayObject)
           );
-        return productToDelete;
+        return objectToDelete;
       } else throw new Error("No encontrado");
     } catch (error) {
       console.log(`Error al eliminar un objeto`);
