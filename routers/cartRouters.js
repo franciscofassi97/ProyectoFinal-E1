@@ -1,4 +1,8 @@
 const router = require("express").Router();
+
+//Middlewares
+const { middlewareAutenticacion } = require("../middleware/auth")
+
 //Controllers
 const {
   saveCart,
@@ -9,12 +13,13 @@ const {
 } = require("../controllers/cartController");
 
 //POST
-router.post("/", saveCart);
-router.post("/:id/productos", addProductToCart);
+router.post("/", middlewareAutenticacion, saveCart);
+router.post("/:id/productos", middlewareAutenticacion, addProductToCart);
 //Get
-router.get("/:id/productos", getCartById);
+router.get("/:id/productos", middlewareAutenticacion, getCartById);
 
 //DELETE
-router.delete("/:id/productos/:id_prod", removeProductFromCart);
-router.delete("/:id", removeCart);
+router.delete("/:id/productos/:id_prod", middlewareAutenticacion, removeProductFromCart);
+router.delete("/:id", middlewareAutenticacion, removeCart);
+
 module.exports = router;

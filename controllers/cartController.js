@@ -69,6 +69,7 @@ const removeProductFromCart = async (req, res) => {
       const index = cart.products.findIndex(
         (product) => product.id == idProducto
       );
+      if(index == -1) throw new Error("Producto no encontrado");
       cart.products.splice(index, 1);
       cart = await contenedorCarrito.updateById(idCart, cart);
       return res.status(200).json(cart);
@@ -88,7 +89,7 @@ const removeCart = async (req, res) => {
     
     const cartDeleted = await contenedorCarrito.deleteById(id);
     if (cartDeleted) return res.status(200).json({ message: "Carrito eliminado" });
-    else throw new Error(`No fue posible eliminar el carrito con id ${id}`);
+    else throw new Error(`Carrito inexistente id ${id}`);
    
   } catch (error) {
     return res.status(400).json({
