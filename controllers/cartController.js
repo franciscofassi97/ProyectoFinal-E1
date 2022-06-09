@@ -87,7 +87,7 @@ const removeCart = async (req, res) => {
   try {
     
     const cartDeleted = await contenedorCarrito.deleteById(id);
-    if (cartDeleted) return res.status(200).json(cartDeleted);
+    if (cartDeleted) return res.status(200).json({ message: "Carrito eliminado" });
     else throw new Error(`No fue posible eliminar el carrito con id ${id}`);
    
   } catch (error) {

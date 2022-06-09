@@ -3,8 +3,9 @@ const Contenedor = require("../models/Contenedor");
 const contenedorProductos = new Contenedor("productos.json");
 
 const saveProduct = async (req, res) => {
+  const { nombre, descripcion, codigo, fotoUrl, precio, stock } = req.body;
+ 
   try {
-    const { nombre, descripcion, codigo, fotoUrl, precio, stock } = req.body;
     const newProduct = {
       nombre,
       descripcion,
@@ -16,8 +17,9 @@ const saveProduct = async (req, res) => {
     };
 
     const id = await contenedorProductos.save(newProduct);
+    if (id) res.status(200).json({ id });
+    else throw new Error("No fue posible guardar el producto");
 
-    res.status(200).json({ id });
   } catch (error) {
     return res.status(400).json({
       error: error.message,
@@ -36,7 +38,7 @@ const getProducts = async (req, res) => {
     } else {
       const products = await contenedorProductos.getAll();
       if (products) return res.status(200).json(products);
-      else throw new Error("No se ha encontrado el producto");
+      else throw new Error("No existen productos registrados");
     }
   } catch (error) {
     return res.status(400).json({
@@ -46,25 +48,31 @@ const getProducts = async (req, res) => {
 };
 
 const updateProduct = async (req, res) => {
+  const id = req.params.id;
   try {
-    const id = req.params.id;
 
     const { nombre, descripcion, codigo, fotoUrl, precio, stock } = req.body;
-    const newProduct = {
-      nombre,
-      descripcion,
-      codigo,
-      fotoUrl,
-      precio,
-      stock,
-    };
+    const productToUpdate = await contenedorProductos.getById(id);
 
-    const idActualizado = await contenedorProductos.updateById(id, newProduct);
-    if (idActualizado)
-      res
-        .status(201)
-        .json({ message: `Producto ${idActualizado} actualizado` });
+    if(productToUpdate){
+      let newProduct = {
+        nombre: nombre || productToUpdate.nombre,
+        descripcion: descripcion || productToUpdate.descripcion,
+        codigo: codigo || productToUpdate.codigo,
+        fotoUrl: fotoUrl || productToUpdate.fotoUrl,
+        precio: precio || productToUpdate.precio,
+        stock: stock || productToUpdate.stock
+      };
+      
+      newProduct = await contenedorProductos.updateById(id, newProduct);
+      res.status(201)
+        .json({ 
+          message: `Producto ${newProduct.id} actualizado`,
+          newProduct 
+        });
+    }
     else throw new Error("No se ha encontrado el producto");
+
   } catch (error) {
     return res.status(400).json({
       erorr: error.message,
