@@ -1,7 +1,7 @@
 const router = require("express").Router();
 
 //Middlewares
-const { middlewareAutenticacion } = require("../middleware/auth")
+const { middlewareAutenticacion, middlewareAutorizacion } = require("../middleware/auth")
 
 //Controllers
 const {
@@ -20,6 +20,6 @@ router.get("/:id/productos", middlewareAutenticacion, getCartById);
 
 //DELETE
 router.delete("/:id/productos/:id_prod", middlewareAutenticacion, removeProductFromCart);
-router.delete("/:id", middlewareAutenticacion, removeCart);
+router.delete("/:id", middlewareAutenticacion, middlewareAutorizacion, removeCart);
 
 module.exports = router;
